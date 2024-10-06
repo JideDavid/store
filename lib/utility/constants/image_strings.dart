@@ -23,5 +23,8 @@ class TImages {
   static const String menuVert = "assets/icons/menu_vert.png";
   static const String sun = "assets/icons/sun.png";
   static const String search = "assets/icons/search.png";
+  static const String emptyBox = "assets/icons/empty_box.png";
+  static const String emptyCart = "assets/icons/empty_cart.webp";
+  static const String emptySearch = "assets/icons/empty_search.webp";
  }
 

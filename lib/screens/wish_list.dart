@@ -17,10 +17,7 @@ class WishList extends StatefulWidget {
 }
 
 class _WishListState extends State<WishList> {
-  TextEditingController searchController = TextEditingController();
   final ScrollController scrollController = ScrollController();
-  String queryParam = "";
-  int page = 1;
 
   @override
   void initState() {
@@ -30,6 +27,7 @@ class _WishListState extends State<WishList> {
 
   @override
   Widget build(BuildContext context) {
+    final productProvider = Provider.of<ProductsProvider>(context);
     return Scaffold(
       body: CustomScrollView(
         controller: scrollController,
@@ -90,9 +88,7 @@ class _WishListState extends State<WishList> {
 
                             /// cart button
                             GestureDetector(
-                              onTap: () {
-                                Provider.of<ProductsProvider>(context, listen: false).updateWishList(context, 2);
-                              },
+                              onTap: () {},
                               child: Container(
                                   decoration: BoxDecoration(
                                       color: context
@@ -191,22 +187,21 @@ class _WishListState extends State<WishList> {
                     bottom: TSizes.paddingSpaceXl * 5),
                 child: context.watch<ProductsProvider>().wishList.isEmpty
 
-                    ///
-                    ? const Row(
-                        children: [
-                          SizedBox(
-                              height: 10,
-                              width: 10,
-                              child: CircularProgressIndicator(
-                                color: TColors.secondary,
-                                strokeWidth: 2,
-                              )),
-                          SizedBox(
-                            width: TSizes.paddingSpaceMd,
-                          ),
-                          Text("Favourite a product to see in wishlist"),
-                        ],
-                      )
+                    /// empty wishlist state
+                    ? SizedBox(
+                  height: SizeConfig.screenHeight * 0.6,
+                      width: SizeConfig.screenWidth,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Image.asset(TImages.emptyBox, scale: 1.5,),
+                            const SizedBox(
+                              height: TSizes.paddingSpaceMd,
+                            ),
+                            const Text("Favourite a product to see in wishlist"),
+                          ],
+                        ),
+                    )
 
                     : GridView.builder(
                             physics:
@@ -234,73 +229,156 @@ class _WishListState extends State<WishList> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Expanded(
-                                    child: Stack(
-                                      children: [
-                                        Card(
-                                          color: TColors.white,
-                                          elevation: 5,
-                                          shape: RoundedRectangleBorder(
-                                              side: BorderSide(
-                                                  width: 2,
-                                                  color: TColors.grey
-                                                      .withOpacity(0.5)),
-                                              borderRadius: BorderRadius.circular(
-                                                  TSizes.paddingSpaceXl)),
-                                          clipBehavior: Clip.hardEdge,
-                                          child: Stack(
-                                            children: [
-                                              Container(
-                                                decoration: BoxDecoration(
-                                                  image: DecorationImage(
-                                                    image: CachedNetworkImageProvider(
-                                                        context
-                                                            .watch<
-                                                                ProductsProvider>()
-                                                            .wishProducts[index]
-                                                            .image,
-                                                        scale: 5),
-                                                    onError:
-                                                        (exception, stackTrace) {
-                                                      // Handle error here, though DecorationImage doesn't support errorBuilder directly.
-                                                      // You can choose to replace the URL with a fallback image if needed.
-                                                      debugPrint(
-                                                          'Image loading failed: $exception');
-                                                    },
+                                    child: GestureDetector(
+                                      onTap: (){
+
+                                        // ---------- show modal to add to cart ------------- //
+                                        showModalBottomSheet(
+                                            context: context,
+                                            scrollControlDisabledMaxHeightRatio: 0.7,
+                                            backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+                                            builder: (context){
+                                              return Column(
+                                                children: [
+                                                  Container(
+                                                    width: SizeConfig.screenWidth * 0.8,
+                                                    height: SizeConfig.screenWidth * 0.5,
+                                                    decoration: BoxDecoration(
+                                                        color: TColors.white,
+                                                        image: DecorationImage(
+                                                          image: CachedNetworkImageProvider(
+                                                              productProvider
+                                                                  .wishProducts![
+                                                              index]
+                                                                  .image,
+                                                              scale: 1),
+                                                          fit: BoxFit.contain,
+                                                          onError: (exception,
+                                                              stackTrace) {
+                                                            // Handle error here, though DecorationImage doesn't support errorBuilder directly.
+                                                            // You can choose to replace the URL with a fallback image if needed.
+                                                            debugPrint(
+                                                                'Image loading failed: $exception');
+                                                          },
+                                                        ),
+                                                        borderRadius: BorderRadius.circular(TSizes.paddingSpaceMd * 2)
+                                                    ),
+                                                  ),
+
+                                                  const SizedBox(height: TSizes.paddingSpaceXl ),
+
+                                                  SizedBox(
+                                                    width: SizeConfig.screenWidth * 0.8,
+                                                    child: Text(
+                                                      productProvider
+                                                          .wishProducts[
+                                                      index]
+                                                          .title,
+                                                      style: const TextStyle(
+                                                          fontSize: 20, fontWeight: FontWeight.bold
+                                                      ),
+                                                      textAlign: TextAlign.center,
+                                                    ),
+                                                  ),
+
+                                                  const SizedBox(height: TSizes.paddingSpaceXl ),
+
+                                                  SizedBox(
+                                                    width: SizeConfig.screenWidth * 0.8,
+                                                    child: Text(
+                                                      "N${productProvider.wishProducts[index].price.toString()}",
+                                                      style: const TextStyle(
+                                                          fontSize: 50, fontWeight: FontWeight.bold
+                                                      ),
+                                                      textAlign: TextAlign.center,
+                                                    ),
+                                                  ),
+
+                                                  const SizedBox(height: TSizes.paddingSpaceXl ),
+
+                                                  SizedBox(
+                                                      width: SizeConfig.screenWidth * 0.8,
+                                                      child: FilledButton(onPressed: (){
+                                                        productProvider.addItemToCart(
+                                                            context,
+                                                            productProvider
+                                                                .wishProducts[
+                                                            index]
+                                                                .id
+                                                        );
+                                                      }, child: const Text("Add to Cart")))
+                                                ],
+                                              );
+                                            });
+                                      },
+                                      child: Stack(
+                                        children: [
+                                          Card(
+                                            color: TColors.white,
+                                            elevation: 5,
+                                            shape: RoundedRectangleBorder(
+                                                side: BorderSide(
+                                                    width: 2,
+                                                    color: TColors.grey
+                                                        .withOpacity(0.5)),
+                                                borderRadius: BorderRadius.circular(
+                                                    TSizes.paddingSpaceXl)),
+                                            clipBehavior: Clip.hardEdge,
+                                            child: Stack(
+                                              children: [
+                                                Container(
+                                                  decoration: BoxDecoration(
+                                                    image: DecorationImage(
+                                                      image: CachedNetworkImageProvider(
+                                                          context
+                                                              .watch<
+                                                                  ProductsProvider>()
+                                                              .wishProducts[index]
+                                                              .image,
+                                                          scale: 5),
+                                                      onError:
+                                                          (exception, stackTrace) {
+                                                        // Handle error here, though DecorationImage doesn't support errorBuilder directly.
+                                                        // You can choose to replace the URL with a fallback image if needed.
+                                                        debugPrint(
+                                                            'Image loading failed: $exception');
+                                                      },
+                                                    ),
                                                   ),
                                                 ),
-                                              ),
-                                            ],
+                                              ],
+                                            ),
                                           ),
-                                        ),
 
-                                        Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                            horizontal: TSizes.paddingSpaceXl,
-                                            vertical: TSizes.paddingSpaceXl
-                                          ),
-                                          child: Row(
-                                            children: [
-                                              const Spacer(),
-                                              GestureDetector(
-                                                onTap: (){
-                                                  /// update wishlist with product Id
-                                                  Provider.of<ProductsProvider>(context, listen: false).updateWishList(
-                                                    context,
-                                                    Provider.of<ProductsProvider>(context, listen: false).wishProducts[index].id
-                                                  );
-                                                },
-                                                child: Icon(
-                                                  Provider.of<ProductsProvider>(context).wishList.contains(
-                                                    Provider.of<ProductsProvider>(context).wishProducts[index].id
-                                                  ) ? Icons.favorite : Icons.favorite_outline,
-                                                  color: TColors.secondary,
-                                                  size: 30,
-                                                ),
-                                              )
-                                            ],
-                                          ),
-                                        )
-                                      ],
+                                          Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: TSizes.paddingSpaceXl,
+                                              vertical: TSizes.paddingSpaceXl
+                                            ),
+                                            child: Row(
+                                              children: [
+                                                const Spacer(),
+                                                GestureDetector(
+                                                  onTap: (){
+                                                    /// update wishlist with product Id
+                                                    Provider.of<ProductsProvider>(context, listen: false).updateWishList(
+                                                      context,
+                                                      Provider.of<ProductsProvider>(context, listen: false).wishProducts[index].id
+                                                    );
+                                                  },
+                                                  child: Icon(
+                                                    Provider.of<ProductsProvider>(context).wishList.contains(
+                                                      Provider.of<ProductsProvider>(context).wishProducts[index].id
+                                                    ) ? Icons.favorite : Icons.favorite_outline,
+                                                    color: TColors.secondary,
+                                                    size: 30,
+                                                  ),
+                                                )
+                                              ],
+                                            ),
+                                          )
+                                        ],
+                                      ),
                                     ),
                                   ),
 

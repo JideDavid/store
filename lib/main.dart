@@ -39,11 +39,6 @@ class _MyAppState extends State<MyApp> {
       theme: context.watch<UserSettingsProvider>().isLightMode
           ? TAppTheme.lightTheme
           : TAppTheme.darkTheme,
-      // ThemeData(
-      //   colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-      //   colorScheme:
-      //   useMaterial3: true,
-      // ),
       home: const SplashScreen(),
     );
   }

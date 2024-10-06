@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:store/screens/cart.dart';
 import 'package:store/screens/home_page.dart';
 import 'package:store/screens/wish_list.dart';
 import 'package:store/view_Models/user_settings_provider.dart';
@@ -87,7 +88,8 @@ class _HomeNavState extends State<HomeNav> {
         children: [
           ///navigation screens
           navIndex == 0 ? HomePage(scaffoldKey: scaffoldKey,)
-          : WishList(scaffoldKey: scaffoldKey),
+          : navIndex == 1 ? WishList(scaffoldKey: scaffoldKey)
+          : Cart(scaffoldKey: scaffoldKey),
 
           /// navigation bar
           Column(
@@ -154,24 +156,24 @@ class _HomeNavState extends State<HomeNav> {
                           ),
                         ),
                       ),
-
-                      /// wallet
-                      Expanded(
-                        child: GestureDetector(
-                          onTap: (){
-                            setState(() {
-                              navIndex = 3;
-                            });
-                          },
-                          child: SizedBox(
-                            child: Image.asset(
-                                navIndex == 3 ? TImages.walletActV : TImages.walletInAct,
-                              // color: context.watch<UserSettingsProvider>().isLightMode
-                              //     ? TColors.primary : TColors.white,
-                            ),
-                          ),
-                        ),
-                      )
+                      //
+                      // /// wallet
+                      // Expanded(
+                      //   child: GestureDetector(
+                      //     onTap: (){
+                      //       setState(() {
+                      //         navIndex = 3;
+                      //       });
+                      //     },
+                      //     child: SizedBox(
+                      //       child: Image.asset(
+                      //           navIndex == 3 ? TImages.walletActV : TImages.walletInAct,
+                      //         // color: context.watch<UserSettingsProvider>().isLightMode
+                      //         //     ? TColors.primary : TColors.white,
+                      //       ),
+                      //     ),
+                      //   ),
+                      // )
                     ],
                   ),
                 ),

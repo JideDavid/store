@@ -1,6 +1,6 @@
 import 'dart:convert';
-
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:store/models/cart_model.dart';
 
 class PrefHelper {
 
@@ -35,10 +35,10 @@ class PrefHelper {
     pref.setBool("appIsFresh", val);
   }
 
-  Future<void> saveWishList(List<int> wishList) async {
+  saveWishList(List<int> wishList) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String jsonString = jsonEncode(wishList); // Convert list to JSON string
-    await prefs.setString('wishList', jsonString); // Save the string
+    String jsonString = jsonEncode(wishList);
+    await prefs.setString('wishList', jsonString);
   }
 
   Future<List<int>> getWishList() async {
@@ -46,10 +46,29 @@ class PrefHelper {
     String? jsonString = prefs.getString('wishList');
 
     if (jsonString != null) {
-      List<dynamic> jsonList = jsonDecode(jsonString); // Convert back to List<dynamic>
-      return jsonList.map((e) => e as int).toList(); // Convert to List<int>
+      List<dynamic> jsonList = jsonDecode(jsonString);
+      return jsonList.map((e) => e as int).toList();
     }
 
-    return []; // Return empty list if no data found
+    return [];
   }
+
+  setCartItems(List<CartModel> cartModel) async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String jsonString = jsonEncode(cartModel.map((items) => items.toJson()).toList());
+    await prefs.setString("cartItems", jsonString);
+  }
+
+  Future<List<CartModel>> getCartItems() async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? jsonString = prefs.getString("cartItems");
+
+    if(jsonString != null){
+      List<dynamic> jsonList = jsonDecode(jsonString);
+      List<CartModel> cartItems = jsonList.map((items) => CartModel.fromJson(items)).toList();
+      return cartItems;
+    }
+    return [];
+  }
+
 }
