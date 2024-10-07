@@ -40,7 +40,7 @@ class _CartState extends State<Cart> {
             snap: false,
             expandedHeight: 200,
             flexibleSpace: FlexibleSpaceBar(
-              collapseMode: CollapseMode.parallax,
+              collapseMode: CollapseMode.pin,
               background: Container(
                 width: SizeConfig.screenWidth,
                 height: SizeConfig.screenHeight,

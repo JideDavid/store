@@ -40,7 +40,7 @@ class _WishListState extends State<WishList> {
             snap: false,
             expandedHeight: 200,
             flexibleSpace: FlexibleSpaceBar(
-              collapseMode: CollapseMode.parallax,
+              collapseMode: CollapseMode.pin,
               background: Container(
                 width: SizeConfig.screenWidth,
                 height: SizeConfig.screenHeight,
@@ -146,27 +146,6 @@ class _WishListState extends State<WishList> {
                         ),
                       ),
 
-                      // const SizedBox(
-                      //   height: TSizes.paddingSpaceXl,
-                      // ),
-                      //
-                      // /// search box
-                      // Padding(
-                      //   padding: const EdgeInsets.symmetric(
-                      //       horizontal: TSizes.paddingSpaceXl),
-                      //   child: TextField(
-                      //     controller: searchController,
-                      //     decoration: InputDecoration(
-                      //         fillColor: context
-                      //                 .watch<UserSettingsProvider>()
-                      //                 .isLightMode
-                      //             ? TColors.softWhite
-                      //             : TColors.softBlack,
-                      //         prefixIcon: Image.asset(TImages.search),
-                      //         hintText: "Search..."),
-                      //   ),
-                      // ),
-
                       const SizedBox(
                         height: TSizes.paddingSpaceXl,
                       ),
@@ -248,7 +227,7 @@ class _WishListState extends State<WishList> {
                                                         image: DecorationImage(
                                                           image: CachedNetworkImageProvider(
                                                               productProvider
-                                                                  .wishProducts![
+                                                                  .wishProducts[
                                                               index]
                                                                   .image,
                                                               scale: 1),

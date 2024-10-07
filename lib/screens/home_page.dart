@@ -58,10 +58,9 @@ class _HomePageState extends State<HomePage> {
             centerTitle: true,
             floating: false,
             pinned: true,
-            snap: false,
             expandedHeight: 280,
             flexibleSpace: FlexibleSpaceBar(
-              collapseMode: CollapseMode.parallax,
+              collapseMode: CollapseMode.pin,
               background: Container(
                 width: SizeConfig.screenWidth,
                 height: SizeConfig.screenHeight,
@@ -197,6 +196,146 @@ class _HomePageState extends State<HomePage> {
                       const SizedBox(
                         height: TSizes.paddingSpaceXl,
                       ),
+
+                      /// category
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: TSizes.paddingSpaceXl),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  "Choose Category",
+                                  style: Theme.of(context).textTheme.titleMedium,
+                                ),
+                              ],
+                            ),
+                          ),
+
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: TSizes.paddingSpaceXl,),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: context
+                                    .watch<UserSettingsProvider>()
+                                    .isLightMode
+                                    ? TColors.softWhite
+                                    : TColors.softBlack,
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: TSizes.paddingSpaceXl, vertical: TSizes.paddingSpaceLg),
+                                child: GestureDetector(
+                                  onTap: productProvider.products != null
+                                    ? () {
+                                    showModalBottomSheet(
+                                        context: context,
+                                        scrollControlDisabledMaxHeightRatio: 0.6,
+                                        backgroundColor:
+                                        Theme.of(context).scaffoldBackgroundColor,
+                                        builder: (context) {
+                                          return Column(
+                                            children: [
+                                              const Text(
+                                                "Products by category",
+                                                style: TextStyle(
+                                                    fontSize: 15,
+                                                    color: TColors.grey),
+                                              ),
+                                              const SizedBox(
+                                                height: TSizes.paddingSpaceXl,
+                                              ),
+                                              Expanded(
+                                                child: ListView.builder(
+                                                    itemCount: productProvider
+                                                        .productCategories!
+                                                        .length + 1,
+                                                    itemBuilder: (context, index) {
+                                                      return ListTile(
+                                                        onTap: () {
+                                                          if(index == 0){
+                                                            Provider.of<ProductsProvider>(
+                                                                context,
+                                                                listen: false)
+                                                                .sortProducts(
+                                                                "All Products");
+                                                            if (searchController
+                                                                .text.isNotEmpty) {
+                                                              productProvider.searchProducts(
+                                                                  searchController.text);
+                                                            }
+                                                          }
+                                                          else{
+                                                            Provider.of<ProductsProvider>(
+                                                                context,
+                                                                listen: false)
+                                                                .sortProducts(Provider.of<
+                                                                ProductsProvider>(
+                                                                context,
+                                                                listen: false)
+                                                                .productCategories![
+                                                            index - 1]);
+                                                            if (searchController
+                                                                .text.isNotEmpty) {
+                                                              productProvider.searchProducts(
+                                                                  searchController.text);
+                                                            }
+                                                          }
+                                                          Navigator.pop(context);
+                                                        },
+                                                        title: Text(
+                                                          index == 0
+                                                              ? "All Products"
+                                                              : productProvider
+                                                              .productCategories![
+                                                          index - 1],
+                                                          style: const TextStyle(
+                                                              fontSize: 20),
+                                                        ),
+                                                        trailing: index == 0
+                                                          ? Icon(
+                                                          productProvider.category == "All Products"
+                                                           ? Icons.circle : Icons.circle_outlined,
+                                                        color: productProvider.category == "All Products" ? TColors.secondary : TColors.grey,)
+
+                                                        : Icon(
+                                                          productProvider.category == productProvider.productCategories![index-1]
+                                                            ? Icons.circle : Icons.circle_outlined,
+                                                        color: productProvider.category == productProvider.productCategories![index-1]
+                                                            ? TColors.secondary : TColors.grey,),
+                                                      );
+                                                    }),
+                                              )
+                                            ],
+                                          );
+                                        });
+                                  }
+                                  : null,
+                                  child: Row(
+                                    children: [
+                                      const Icon(
+                                        Icons.settings_input_component,
+                                        color: TColors.secondary,
+                                        size: 15,
+                                      ),
+                                      const SizedBox(
+                                        width: TSizes.paddingSpaceMd,
+                                      ),
+                                      Text(
+                                        productProvider.category,
+                                        style: const TextStyle(color: TColors.secondary),
+                                      )
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          )
+                        ],
+                      ),
                     ],
                   ),
                 ),
@@ -204,273 +343,205 @@ class _HomePageState extends State<HomePage> {
               centerTitle: true,
             ),
           ),
-          SliverAppBar(
-            leading: Container(),
-            centerTitle: true,
-            floating: true,
-            pinned: true,
-            snap: false,
-            expandedHeight: 120,
-            flexibleSpace: FlexibleSpaceBar(
-              collapseMode: CollapseMode.pin,
-              background: Container(
-                width: SizeConfig.screenWidth,
-                height: SizeConfig.screenHeight,
-                color: Theme.of(context).scaffoldBackgroundColor,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    const Spacer(),
-
-                    /// category
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: TSizes.paddingSpaceXl),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            "Choose Category",
-                            style: Theme.of(context).textTheme.titleMedium,
-                          ),
-                          GestureDetector(
-                            onTap: () {
-                              //
-                              showModalBottomSheet(
-                                  context: context,
-                                  isScrollControlled: false,
-                                  scrollControlDisabledMaxHeightRatio: 0.3,
-                                  backgroundColor:
-                                      Theme.of(context).scaffoldBackgroundColor,
-                                  builder: (context) => Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: TSizes.paddingSpaceXl),
-                                        child: Column(
-                                          children: [
-                                            Row(
-                                              children: [
-                                                Text(
-                                                  "Sort Price",
-                                                  style: Theme.of(context)
-                                                      .textTheme
-                                                      .displayMedium!
-                                                      .copyWith(fontSize: 30),
-                                                ),
-                                              ],
-                                            )
-                                          ],
-                                        ),
-                                      ));
-                            },
-                            child: Row(
-                              children: [
-                                const Icon(
-                                  Icons.settings_input_component,
-                                  color: TColors.grey,
-                                  size: 15,
-                                ),
-                                const SizedBox(
-                                  width: TSizes.paddingSpaceSm,
-                                ),
-                                Text(
-                                  "Sort",
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .bodySmall!
-                                      .copyWith(color: TColors.grey),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-
-                    const SizedBox(
-                      height: TSizes.paddingSpaceXl,
-                    ),
-
-                    /// loading categories
-                    Provider.of<ProductsProvider>(context).productCategories ==
-                            null
-                        ? Padding(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: TSizes.paddingSpaceXl),
-                            child: SizedBox(
-                              height: TSizes.paddingSpaceXl * 2,
-                              width: SizeConfig.screenWidth,
-                              child: const Center(
-                                child: Row(
-                                  children: [
-                                    SizedBox(
-                                        height: 10,
-                                        width: 10,
-                                        child: CircularProgressIndicator(
-                                          color: TColors.secondary,
-                                          strokeWidth: 2,
-                                        )),
-                                    SizedBox(
-                                      width: TSizes.paddingSpaceMd,
-                                    ),
-                                    Text("getting categories..."),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          )
-
-                        /// category list
-                        : SizedBox(
-                            width: SizeConfig.screenWidth,
-                            height: 45,
-                            child: ListView.builder(
-                                scrollDirection: Axis.horizontal,
-                                itemCount:
-                                    Provider.of<ProductsProvider>(context)
-                                            .productCategories!
-                                            .length +
-                                        1,
-                                itemBuilder: (context, index) {
-                                  /// category item
-                                  return Padding(
-                                    padding: EdgeInsets.fromLTRB(
-                                        TSizes.paddingSpaceXl,
-                                        0,
-                                        index ==
-                                                Provider.of<ProductsProvider>(
-                                                        context)
-                                                    .productCategories!
-                                                    .length
-                                            ? TSizes.paddingSpaceXl
-                                            : 0,
-                                        0),
-                                    child: index == 0
-
-                                        /// all products
-                                        ? GestureDetector(
-                                            onTap: () {
-                                              setState(() {
-                                                Provider.of<ProductsProvider>(
-                                                        context,
-                                                        listen: false)
-                                                    .sortProducts(
-                                                        "All Products");
-                                              });
-                                              if(searchController.text.isNotEmpty){
-                                                productProvider.searchProducts(
-                                                  searchController.text
-                                                );
-                                              }
-                                            },
-                                            child: Container(
-                                              decoration: BoxDecoration(
-                                                  color: context
-                                                              .watch<
-                                                                  ProductsProvider>()
-                                                              .category ==
-                                                          "All Products"
-                                                      ? TColors.secondary
-                                                      : context
-                                                              .watch<
-                                                                  UserSettingsProvider>()
-                                                              .isLightMode
-                                                          ? TColors.softWhite
-                                                          : TColors.softBlack,
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          TSizes
-                                                              .paddingSpaceMd)),
-                                              child: Padding(
-                                                padding: const EdgeInsets
-                                                    .symmetric(
-                                                    horizontal:
-                                                        TSizes.paddingSpaceXl *
-                                                            2),
-                                                child: Center(
-                                                    child: Text(
-                                                  "All Products",
-                                                  style: Theme.of(context)
-                                                      .textTheme
-                                                      .titleMedium,
-                                                )),
-                                              ),
-                                            ),
-                                          )
-
-                                        /// categories
-                                        : GestureDetector(
-                                            onTap: () {
-                                              setState(() {
-                                                Provider.of<ProductsProvider>(
-                                                        context,
-                                                        listen: false)
-                                                    .sortProducts(Provider.of<
-                                                                    ProductsProvider>(
-                                                                context,
-                                                                listen: false)
-                                                            .productCategories![
-                                                        index - 1]);
-                                              });
-                                              if(searchController.text.isNotEmpty){
-                                                productProvider.searchProducts(
-                                                    searchController.text
-                                                );
-                                              }
-                                            },
-                                            child: Container(
-                                              decoration: BoxDecoration(
-                                                  color: context
-                                                              .watch<
-                                                                  ProductsProvider>()
-                                                              .category ==
-                                                          context
-                                                                  .watch<
-                                                                      ProductsProvider>()
-                                                                  .productCategories![
-                                                              index - 1]
-                                                      ? TColors.secondary
-                                                      : context
-                                                              .watch<
-                                                                  UserSettingsProvider>()
-                                                              .isLightMode
-                                                          ? TColors.softWhite
-                                                          : TColors.softBlack,
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          TSizes
-                                                              .paddingSpaceMd)),
-                                              child: Padding(
-                                                padding: const EdgeInsets
-                                                    .symmetric(
-                                                    horizontal:
-                                                        TSizes.paddingSpaceXl *
-                                                            2),
-                                                child: Center(
-                                                    child: Text(
-                                                  Provider.of<ProductsProvider>(
-                                                              context)
-                                                          .productCategories![
-                                                      index - 1],
-                                                  style: Theme.of(context)
-                                                      .textTheme
-                                                      .titleMedium,
-                                                )),
-                                              ),
-                                            ),
-                                          ),
-                                  );
-                                }),
-                          ),
-
-                    const SizedBox(
-                      height: TSizes.paddingSpaceXl,
-                    ),
-                  ],
-                ),
-              ),
-              centerTitle: true,
-            ),
-          ),
+          // SliverAppBar(
+          //   leading: Container(),
+          //   centerTitle: true,
+          //   floating: true,
+          //   pinned: true,
+          //   snap: false,
+          //   expandedHeight: 120,
+          //   flexibleSpace: FlexibleSpaceBar(
+          //     collapseMode: CollapseMode.pin,
+          //     background: Container(
+          //       width: SizeConfig.screenWidth,
+          //       height: SizeConfig.screenHeight,
+          //       color: Theme.of(context).scaffoldBackgroundColor,
+          //       child: Column(
+          //         mainAxisAlignment: MainAxisAlignment.end,
+          //         children: [
+          //           const Spacer(),
+          //
+          //           const SizedBox(
+          //             height: TSizes.paddingSpaceXl,
+          //           ),
+          //
+          //           /// loading categories
+          //           Provider.of<ProductsProvider>(context).productCategories ==
+          //                   null
+          //               ? Padding(
+          //                   padding: const EdgeInsets.symmetric(
+          //                       horizontal: TSizes.paddingSpaceXl),
+          //                   child: SizedBox(
+          //                     height: TSizes.paddingSpaceXl * 2,
+          //                     width: SizeConfig.screenWidth,
+          //                     child: const Center(
+          //                       child: Row(
+          //                         children: [
+          //                           SizedBox(
+          //                               height: 10,
+          //                               width: 10,
+          //                               child: CircularProgressIndicator(
+          //                                 color: TColors.secondary,
+          //                                 strokeWidth: 2,
+          //                               )),
+          //                           SizedBox(
+          //                             width: TSizes.paddingSpaceMd,
+          //                           ),
+          //                           Text("getting categories..."),
+          //                         ],
+          //                       ),
+          //                     ),
+          //                   ),
+          //                 )
+          //
+          //               /// category list
+          //               : SizedBox(
+          //                   width: SizeConfig.screenWidth,
+          //                   height: 45,
+          //                   child: ListView.builder(
+          //                       scrollDirection: Axis.horizontal,
+          //                       itemCount:
+          //                           Provider.of<ProductsProvider>(context)
+          //                                   .productCategories!
+          //                                   .length +
+          //                               1,
+          //                       itemBuilder: (context, index) {
+          //                         /// category item
+          //                         return Padding(
+          //                           padding: EdgeInsets.fromLTRB(
+          //                               TSizes.paddingSpaceXl,
+          //                               0,
+          //                               index ==
+          //                                       Provider.of<ProductsProvider>(
+          //                                               context)
+          //                                           .productCategories!
+          //                                           .length
+          //                                   ? TSizes.paddingSpaceXl
+          //                                   : 0,
+          //                               0),
+          //                           child: index == 0
+          //
+          //                               /// all products
+          //                               ? GestureDetector(
+          //                                   onTap: () {
+          //                                       Provider.of<ProductsProvider>(
+          //                                               context,
+          //                                               listen: false)
+          //                                           .sortProducts(
+          //                                               "All Products");
+          //                                     if (searchController
+          //                                         .text.isNotEmpty) {
+          //                                       productProvider.searchProducts(
+          //                                           searchController.text);
+          //                                     }
+          //                                   },
+          //                                   child: Container(
+          //                                     decoration: BoxDecoration(
+          //                                         color: context
+          //                                                     .watch<
+          //                                                         ProductsProvider>()
+          //                                                     .category ==
+          //                                                 "All Products"
+          //                                             ? TColors.secondary
+          //                                             : context
+          //                                                     .watch<
+          //                                                         UserSettingsProvider>()
+          //                                                     .isLightMode
+          //                                                 ? TColors.softWhite
+          //                                                 : TColors.softBlack,
+          //                                         borderRadius:
+          //                                             BorderRadius.circular(
+          //                                                 TSizes
+          //                                                     .paddingSpaceMd)),
+          //                                     child: Padding(
+          //                                       padding: const EdgeInsets
+          //                                           .symmetric(
+          //                                           horizontal:
+          //                                               TSizes.paddingSpaceXl *
+          //                                                   2),
+          //                                       child: Center(
+          //                                           child: Text(
+          //                                         "All Products",
+          //                                         style: Theme.of(context)
+          //                                             .textTheme
+          //                                             .titleMedium,
+          //                                       )),
+          //                                     ),
+          //                                   ),
+          //                                 )
+          //
+          //                               /// categories
+          //                               : GestureDetector(
+          //                                   onTap: () {
+          //                                       Provider.of<ProductsProvider>(
+          //                                               context,
+          //                                               listen: false)
+          //                                           .sortProducts(Provider.of<
+          //                                                           ProductsProvider>(
+          //                                                       context,
+          //                                                       listen: false)
+          //                                                   .productCategories![
+          //                                               index - 1]);
+          //                                     if (searchController
+          //                                         .text.isNotEmpty) {
+          //                                       productProvider.searchProducts(
+          //                                           searchController.text);
+          //                                     }
+          //                                   },
+          //                                   child: Container(
+          //                                     decoration: BoxDecoration(
+          //                                         color: context
+          //                                                     .watch<
+          //                                                         ProductsProvider>()
+          //                                                     .category ==
+          //                                                 context
+          //                                                         .watch<
+          //                                                             ProductsProvider>()
+          //                                                         .productCategories![
+          //                                                     index - 1]
+          //                                             ? TColors.secondary
+          //                                             : context
+          //                                                     .watch<
+          //                                                         UserSettingsProvider>()
+          //                                                     .isLightMode
+          //                                                 ? TColors.softWhite
+          //                                                 : TColors.softBlack,
+          //                                         borderRadius:
+          //                                             BorderRadius.circular(
+          //                                                 TSizes
+          //                                                     .paddingSpaceMd)),
+          //                                     child: Padding(
+          //                                       padding: const EdgeInsets
+          //                                           .symmetric(
+          //                                           horizontal:
+          //                                               TSizes.paddingSpaceXl *
+          //                                                   2),
+          //                                       child: Center(
+          //                                           child: Text(
+          //                                         Provider.of<ProductsProvider>(
+          //                                                     context)
+          //                                                 .productCategories![
+          //                                             index - 1],
+          //                                         style: Theme.of(context)
+          //                                             .textTheme
+          //                                             .titleMedium,
+          //                                       )),
+          //                                     ),
+          //                                   ),
+          //                                 ),
+          //                         );
+          //                       }),
+          //                 ),
+          //
+          //           const SizedBox(
+          //             height: TSizes.paddingSpaceXl,
+          //           ),
+          //         ],
+          //       ),
+          //     ),
+          //     centerTitle: true,
+          //   ),
+          // ),
           SliverToBoxAdapter(
             child: Padding(
                 padding: const EdgeInsets.only(
@@ -519,113 +590,133 @@ class _HomePageState extends State<HomePage> {
                                 : productProvider.searchProduct
                                     .length, // Total number of items in the grid
                             itemBuilder: (context, index) {
-
                               /// product
                               return Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Expanded(
                                     child: GestureDetector(
-                                      onTap: (){
+                                      onTap: () {
                                         // ---------- show modal to add to cart ------------- //
                                         showModalBottomSheet(
                                             context: context,
-                                            scrollControlDisabledMaxHeightRatio: 0.7,
-                                            backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-                                            builder: (context){
-                                          return Column(
-                                            children: [
-                                              Container(
-                                                width: SizeConfig.screenWidth * 0.8,
-                                                height: SizeConfig.screenWidth * 0.5,
-                                                decoration: BoxDecoration(
-                                                  color: TColors.white,
-                                                  image: DecorationImage(
-                                                    image: CachedNetworkImageProvider(
-                                                        searchController
-                                                            .text.isEmpty
-                                                            ? productProvider
-                                                            .products![
-                                                        index]
-                                                            .image
-                                                            : productProvider
-                                                            .searchProduct[
-                                                        index]
-                                                            .image,
-                                                        scale: 1),
-                                                    fit: BoxFit.contain,
-                                                    onError: (exception,
-                                                        stackTrace) {
-                                                      // Handle error here, though DecorationImage doesn't support errorBuilder directly.
-                                                      // You can choose to replace the URL with a fallback image if needed.
-                                                      debugPrint(
-                                                          'Image loading failed: $exception');
-                                                    },
+                                            scrollControlDisabledMaxHeightRatio:
+                                                0.7,
+                                            backgroundColor: Theme.of(context)
+                                                .scaffoldBackgroundColor,
+                                            builder: (context) {
+                                              return Column(
+                                                children: [
+                                                  Container(
+                                                    width:
+                                                        SizeConfig.screenWidth *
+                                                            0.8,
+                                                    height:
+                                                        SizeConfig.screenWidth *
+                                                            0.5,
+                                                    decoration: BoxDecoration(
+                                                        color: TColors.white,
+                                                        image: DecorationImage(
+                                                          image: CachedNetworkImageProvider(
+                                                              searchController
+                                                                      .text
+                                                                      .isEmpty
+                                                                  ? productProvider
+                                                                      .products![
+                                                                          index]
+                                                                      .image
+                                                                  : productProvider
+                                                                      .searchProduct[
+                                                                          index]
+                                                                      .image,
+                                                              scale: 1),
+                                                          fit: BoxFit.contain,
+                                                          onError: (exception,
+                                                              stackTrace) {
+                                                            // Handle error here, though DecorationImage doesn't support errorBuilder directly.
+                                                            // You can choose to replace the URL with a fallback image if needed.
+                                                            debugPrint(
+                                                                'Image loading failed: $exception');
+                                                          },
+                                                        ),
+                                                        borderRadius: BorderRadius
+                                                            .circular(TSizes
+                                                                    .paddingSpaceMd *
+                                                                2)),
                                                   ),
-                                                  borderRadius: BorderRadius.circular(TSizes.paddingSpaceMd * 2)
-                                                ),
-                                              ),
-
-                                              const SizedBox(height: TSizes.paddingSpaceXl ),
-
-                                              SizedBox(
-                                                width: SizeConfig.screenWidth * 0.8,
-                                                child: Text(
-                                                    searchController
-                                                    .text.isEmpty
-                                                    ? productProvider
-                                                    .products![
-                                                index]
-                                                    .title
-                                                    : productProvider
-                                                    .searchProduct[
-                                                index]
-                                                    .title,
-                                                  style: const TextStyle(
-                                                    fontSize: 20, fontWeight: FontWeight.bold
+                                                  const SizedBox(
+                                                      height: TSizes
+                                                          .paddingSpaceXl),
+                                                  SizedBox(
+                                                    width:
+                                                        SizeConfig.screenWidth *
+                                                            0.8,
+                                                    child: Text(
+                                                      searchController
+                                                              .text.isEmpty
+                                                          ? productProvider
+                                                              .products![index]
+                                                              .title
+                                                          : productProvider
+                                                              .searchProduct[
+                                                                  index]
+                                                              .title,
+                                                      style: const TextStyle(
+                                                          fontSize: 20,
+                                                          fontWeight:
+                                                              FontWeight.bold),
+                                                      textAlign:
+                                                          TextAlign.center,
+                                                    ),
                                                   ),
-                                                  textAlign: TextAlign.center,
-                                                ),
-                                              ),
-
-                                              const SizedBox(height: TSizes.paddingSpaceXl ),
-
-                                              SizedBox(
-                                                width: SizeConfig.screenWidth * 0.8,
-                                                child: Text(
-                                                  searchController
-                                                      .text.isEmpty
-                                                      ? "N${productProvider.products![index].price.toString()}"
-                                                      : "N${productProvider.searchProduct[index].price.toString()}",
-                                                  style: const TextStyle(
-                                                      fontSize: 50, fontWeight: FontWeight.bold
+                                                  const SizedBox(
+                                                      height: TSizes
+                                                          .paddingSpaceXl),
+                                                  SizedBox(
+                                                    width:
+                                                        SizeConfig.screenWidth *
+                                                            0.8,
+                                                    child: Text(
+                                                      searchController
+                                                              .text.isEmpty
+                                                          ? "N${productProvider.products![index].price.toString()}"
+                                                          : "N${productProvider.searchProduct[index].price.toString()}",
+                                                      style: const TextStyle(
+                                                          fontSize: 50,
+                                                          fontWeight:
+                                                              FontWeight.bold),
+                                                      textAlign:
+                                                          TextAlign.center,
+                                                    ),
                                                   ),
-                                                  textAlign: TextAlign.center,
-                                                ),
-                                              ),
-
-                                              const SizedBox(height: TSizes.paddingSpaceXl ),
-
-                                              SizedBox(
-                                                  width: SizeConfig.screenWidth * 0.8,
-                                                  child: FilledButton(onPressed: (){
-                                                    productProvider.addItemToCart(
-                                                      context,
-                                                        searchController
-                                                            .text.isEmpty
-                                                            ? productProvider
-                                                            .products![
-                                                        index]
-                                                            .id
-                                                            : productProvider
-                                                            .searchProduct[
-                                                        index]
-                                                            .id
-                                                    );
-                                                  }, child: const Text("Add to Cart")))
-                                            ],
-                                          );
-                                        });
+                                                  const SizedBox(
+                                                      height: TSizes
+                                                          .paddingSpaceXl),
+                                                  SizedBox(
+                                                      width: SizeConfig
+                                                              .screenWidth *
+                                                          0.8,
+                                                      child: FilledButton(
+                                                          onPressed: () {
+                                                            productProvider.addItemToCart(
+                                                                context,
+                                                                searchController
+                                                                        .text
+                                                                        .isEmpty
+                                                                    ? productProvider
+                                                                        .products![
+                                                                            index]
+                                                                        .id
+                                                                    : productProvider
+                                                                        .searchProduct[
+                                                                            index]
+                                                                        .id);
+                                                          },
+                                                          child: const Text(
+                                                              "Add to Cart")))
+                                                ],
+                                              );
+                                            });
                                       },
                                       child: Stack(
                                         children: [
@@ -641,7 +732,6 @@ class _HomePageState extends State<HomePage> {
                                                     BorderRadius.circular(
                                                         TSizes.paddingSpaceXl)),
                                             clipBehavior: Clip.hardEdge,
-
                                             child: Stack(
                                               children: [
                                                 Container(
@@ -674,14 +764,15 @@ class _HomePageState extends State<HomePage> {
                                           ),
                                           Padding(
                                             padding: const EdgeInsets.symmetric(
-                                                horizontal: TSizes.paddingSpaceXl,
-                                                vertical: TSizes.paddingSpaceXl),
+                                                horizontal:
+                                                    TSizes.paddingSpaceXl,
+                                                vertical:
+                                                    TSizes.paddingSpaceXl),
                                             child: Row(
                                               children: [
                                                 const Spacer(),
                                                 GestureDetector(
                                                   onTap: () {
-
                                                     /// update wishlist with product Id
                                                     ///
                                                     if (searchController
@@ -716,12 +807,11 @@ class _HomePageState extends State<HomePage> {
                                                   child: searchController
                                                           .text.isEmpty
                                                       ? Icon(
-                                                          productProvider.wishList
-                                                                  .contains(
-                                                                      productProvider
-                                                                          .products![
-                                                                              index]
-                                                                          .id)
+                                                          productProvider.wishList.contains(
+                                                                  productProvider
+                                                                      .products![
+                                                                          index]
+                                                                      .id)
                                                               ? Icons.favorite
                                                               : Icons
                                                                   .favorite_outline,
@@ -730,8 +820,8 @@ class _HomePageState extends State<HomePage> {
                                                           size: 30,
                                                         )
                                                       : Icon(
-                                                          productProvider.wishList
-                                                                  .contains(productProvider
+                                                          productProvider.wishList.contains(
+                                                                  productProvider
                                                                       .searchProduct[
                                                                           index]
                                                                       .id)
@@ -805,32 +895,38 @@ class _HomePageState extends State<HomePage> {
                                   Expanded(
                                     child: GestureDetector(
                                       onTap: () {
-
                                         // ---------- show modal to add to cart ------------- //
                                         showModalBottomSheet(
                                             context: context,
-                                            scrollControlDisabledMaxHeightRatio: 0.7,
-                                            backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-                                            builder: (context){
+                                            scrollControlDisabledMaxHeightRatio:
+                                                0.7,
+                                            backgroundColor: Theme.of(context)
+                                                .scaffoldBackgroundColor,
+                                            builder: (context) {
                                               return Column(
                                                 children: [
                                                   Container(
-                                                    width: SizeConfig.screenWidth * 0.8,
-                                                    height: SizeConfig.screenWidth * 0.5,
+                                                    width:
+                                                        SizeConfig.screenWidth *
+                                                            0.8,
+                                                    height:
+                                                        SizeConfig.screenWidth *
+                                                            0.5,
                                                     decoration: BoxDecoration(
                                                         color: TColors.white,
                                                         image: DecorationImage(
                                                           image: CachedNetworkImageProvider(
                                                               searchController
-                                                                  .text.isEmpty
+                                                                      .text
+                                                                      .isEmpty
                                                                   ? productProvider
-                                                                  .sortedProducts[
-                                                              index]
-                                                                  .image
+                                                                      .sortedProducts[
+                                                                          index]
+                                                                      .image
                                                                   : productProvider
-                                                                  .searchSorted[
-                                                              index]
-                                                                  .image,
+                                                                      .searchSorted[
+                                                                          index]
+                                                                      .image,
                                                               scale: 1),
                                                           fit: BoxFit.contain,
                                                           onError: (exception,
@@ -841,66 +937,82 @@ class _HomePageState extends State<HomePage> {
                                                                 'Image loading failed: $exception');
                                                           },
                                                         ),
-                                                        borderRadius: BorderRadius.circular(TSizes.paddingSpaceMd * 2)
-                                                    ),
+                                                        borderRadius: BorderRadius
+                                                            .circular(TSizes
+                                                                    .paddingSpaceMd *
+                                                                2)),
                                                   ),
-
-                                                  const SizedBox(height: TSizes.paddingSpaceXl ),
-
+                                                  const SizedBox(
+                                                      height: TSizes
+                                                          .paddingSpaceXl),
                                                   SizedBox(
-                                                    width: SizeConfig.screenWidth * 0.8,
+                                                    width:
+                                                        SizeConfig.screenWidth *
+                                                            0.8,
                                                     child: Text(
                                                       searchController
-                                                          .text.isEmpty
+                                                              .text.isEmpty
                                                           ? productProvider
-                                                          .sortedProducts[
-                                                      index]
-                                                          .title
+                                                              .sortedProducts[
+                                                                  index]
+                                                              .title
                                                           : productProvider
-                                                          .searchSorted[
-                                                      index]
-                                                          .title,
+                                                              .searchSorted[
+                                                                  index]
+                                                              .title,
                                                       style: const TextStyle(
-                                                          fontSize: 20, fontWeight: FontWeight.bold
-                                                      ),
-                                                      textAlign: TextAlign.center,
+                                                          fontSize: 20,
+                                                          fontWeight:
+                                                              FontWeight.bold),
+                                                      textAlign:
+                                                          TextAlign.center,
                                                     ),
                                                   ),
-
-                                                  const SizedBox(height: TSizes.paddingSpaceXl ),
-
+                                                  const SizedBox(
+                                                      height: TSizes
+                                                          .paddingSpaceXl),
                                                   SizedBox(
-                                                    width: SizeConfig.screenWidth * 0.8,
+                                                    width:
+                                                        SizeConfig.screenWidth *
+                                                            0.8,
                                                     child: Text(
                                                       searchController
-                                                          .text.isEmpty
+                                                              .text.isEmpty
                                                           ? "N${productProvider.sortedProducts[index].price.toString()}"
                                                           : "N${productProvider.searchSorted[index].price.toString()}",
                                                       style: const TextStyle(
-                                                          fontSize: 50, fontWeight: FontWeight.bold
-                                                      ),
-                                                      textAlign: TextAlign.center,
+                                                          fontSize: 50,
+                                                          fontWeight:
+                                                              FontWeight.bold),
+                                                      textAlign:
+                                                          TextAlign.center,
                                                     ),
                                                   ),
-
-                                                  const SizedBox(height: TSizes.paddingSpaceXl ),
-
+                                                  const SizedBox(
+                                                      height: TSizes
+                                                          .paddingSpaceXl),
                                                   SizedBox(
-                                                      width: SizeConfig.screenWidth * 0.8,
-                                                      child: FilledButton(onPressed: (){
-                                                        productProvider.addItemToCart(
-                                                            context,
-                                                            searchController
-                                                                .text.isEmpty
-                                                                ? productProvider
-                                                                .sortedProducts[index]
-                                                                .id
-                                                                : productProvider
-                                                                .searchSorted[
-                                                            index]
-                                                                .id
-                                                        );
-                                                      }, child: const Text("Add to Cart")))
+                                                      width: SizeConfig
+                                                              .screenWidth *
+                                                          0.8,
+                                                      child: FilledButton(
+                                                          onPressed: () {
+                                                            productProvider.addItemToCart(
+                                                                context,
+                                                                searchController
+                                                                        .text
+                                                                        .isEmpty
+                                                                    ? productProvider
+                                                                        .sortedProducts[
+                                                                            index]
+                                                                        .id
+                                                                    : productProvider
+                                                                        .searchSorted[
+                                                                            index]
+                                                                        .id);
+                                                          },
+                                                          child: const Text(
+                                                              "Add to Cart")))
                                                 ],
                                               );
                                             });
@@ -1038,17 +1150,21 @@ class _HomePageState extends State<HomePage> {
                                   ),
                                   Text(
                                     searchController.text.isEmpty
-                                    ? productProvider.sortedProducts[index].title
-                                    : productProvider.searchSorted[index].title,
+                                        ? productProvider
+                                            .sortedProducts[index].title
+                                        : productProvider
+                                            .searchSorted[index].title,
                                     maxLines: 2,
                                     overflow: TextOverflow.ellipsis,
                                   ),
                                   Text(
                                     searchController.text.isEmpty
-                              ? productProvider.sortedProducts[index]
-                                        .price
-                                        .toString()
-                                    : productProvider.searchSorted[index].price.toString(),
+                                        ? productProvider
+                                            .sortedProducts[index].price
+                                            .toString()
+                                        : productProvider
+                                            .searchSorted[index].price
+                                            .toString(),
                                     maxLines: 2,
                                     overflow: TextOverflow.ellipsis,
                                     style: Theme.of(context)
@@ -1062,10 +1178,10 @@ class _HomePageState extends State<HomePage> {
                           )),
           ),
           SliverToBoxAdapter(
-              child: productProvider.products != null
-                  && productProvider.category == "All Products"
-                  && searchController.text.isEmpty
-                  && productProvider.offsetProduct <
+              child: productProvider.products != null &&
+                      productProvider.category == "All Products" &&
+                      searchController.text.isEmpty &&
+                      productProvider.offsetProduct <
                           productProvider.products!.length
                   ? const SizedBox(
                       height: 200,
