@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:store/screens/splash_screen.dart';
 import 'package:store/utility/constants/size_config.dart';
-import 'package:store/utility/theme/theme.dart';
 import 'package:store/view_Models/products_provider.dart';
 import 'package:store/view_Models/user_settings_provider.dart';
+
+import 'config/theme/theme.dart';
 
 void main() {
   runApp(MultiProvider(

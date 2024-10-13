@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../constants/colors.dart';
+import '../../../utility/constants/colors.dart';
 
 class TBottomSheetTheme {
   TBottomSheetTheme._();
